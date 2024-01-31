@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 
-
 class bigfloat
 {
 	public:
@@ -24,14 +23,14 @@ class bigfloat
 		// bool ch_tol();  // change tolerance
 		
 		// Перегрузка операторов
-		const bigfloat& operator=(const bigfloat& bf);
+		const bigfloat& operator=(const bigfloat& bf);//готово
 		
-		friend std::ostream& operator <<(std::ostream& out, const bigfloat& bf);
-		friend std::istream& operator >>(std::istream &in, bigfloat& bf);
-		//friend bigfloat operator +(const bigfloat& bf);
-		//friend bigfloat operator -(const bigfloat& bf);
-		friend bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2);
-		friend bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2);
+		friend std::ostream& operator <<(std::ostream& out, const bigfloat& bf);//готово
+		friend std::istream& operator >>(std::istream &in, bigfloat& bf);//готово
+		friend bigfloat operator +(const bigfloat& bf);//готово
+		friend bigfloat operator -(const bigfloat& bf);//готово
+		friend bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2);//готово
+		friend bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2);//готово
 		friend bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2);
 		friend bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2);
 		//friend bigfloat operator %(const bigfloat& bf1, const int& bf2);
@@ -44,15 +43,15 @@ class bigfloat
 		friend bigfloat operator *=(bigfloat& bf1, const bigfloat& bf2);
 		friend bigfloat operator /=(bigfloat& bf1, const bigfloat& bf2);
 		//friend bigfloat operator %=(bigfloat& bf1, const int& bf2);
-		friend bool operator !(const bigfloat& bf);
-		friend bool operator &&(const bigfloat& bf1, const bigfloat& bf2);
-		friend bool operator ||(const bigfloat& bf1, const bigfloat& bf2);
-		friend bool operator <(const bigfloat& bf1, const bigfloat& bf2);
-		friend bool operator >(const bigfloat& bf1, const bigfloat& bf2);
-		friend bool operator >=(const bigfloat& bf1, const bigfloat& bf2);
-		friend bool operator <=(const bigfloat& bf1, const bigfloat& bf2);
-		friend bool operator ==(const bigfloat& bf1, const bigfloat& bf2);
-		friend bool operator !=(const bigfloat& bf1, const bigfloat& bf2);
+		// friend bool operator !(const bigfloat& bf);
+		// friend bool operator &&(const bigfloat& bf1, const bigfloat& bf2);
+		// friend bool operator ||(const bigfloat& bf1, const bigfloat& bf2);
+		friend bool operator <(const bigfloat& bf1, const bigfloat& bf2);//готово
+		friend bool operator >(const bigfloat& bf1, const bigfloat& bf2);//готово
+		friend bool operator >=(const bigfloat& bf1, const bigfloat& bf2);//готово
+		friend bool operator <=(const bigfloat& bf1, const bigfloat& bf2);//готово
+		friend bool operator ==(const bigfloat& bf1, const bigfloat& bf2);//готово
+		friend bool operator !=(const bigfloat& bf1, const bigfloat& bf2);//готово
 		
 		friend void add_zeros(bigfloat& bf, int n);
 };

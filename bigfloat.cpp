@@ -59,7 +59,7 @@ std::istream& operator>>(std::istream& in, bigfloat& bf){
 }
 
 //оператор вывода
-std::ostream& operator<<(std::ostream& out, bigfloat& bf){
+std::ostream& operator<<(std::ostream& out, const bigfloat& bf){
 	if (bf.sign)
 	{
 		out<<'-';
@@ -98,109 +98,269 @@ void add_zeros(bigfloat& bf, int n)
 	}
 }
 
-bigfloat operator +(bigfloat& bf1, bigfloat& bf2)
+bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2)
 {
 	std::string c;
+	bigfloat a = bf1;
+	bigfloat b = bf2;
 	bigfloat ans;
-	if (bf1.sign == bf2.sign)
+	if (a.sign == b.sign)
 	{
-		if (bf1.power > bf2.power)
+		if (a.power > b.power)
 		{
-			add_zeros(bf2, bf1.power - bf2.power);
+			add_zeros(b, a.power - b.power);
 		}
-		else if (bf1.power < bf2.power)
+		else if (a.power < b.power)
 		{
-			add_zeros(bf1, bf2.power - bf1.power);
+			add_zeros(a, b.power - a.power);
 		}
 		
-		int len1 = bf1.num.length(), len2 = bf2.num.length();
+		int len1 = a.num.length(), len2 = b.num.length();
 		int k = 0;
 		int lendif;
-		if (len1 > len2)
+		if (len1 < len2)
 		{
-			lendif = len1 - len2;
-			for (int i = len2 - 1; i>=0; --i)
+			ans = a;
+			a = b;
+			b = ans;
+		}
+		lendif = len1 - len2;
+		for (int i = len2 - 1; i>=0; --i)
+		{
+			k += a.num[i + lendif] + b.num[i] - '0';
+			if (k>'9')
 			{
-				k += bf1.num[i + lendif] + bf2.num[i] - '0';
-				if (k>'9')
-				{
-					c.insert(0, 1, k - 10);
-					k = 1;
-				}
-				else
-				{
-					c.insert(0, 1, k);
-					k = 0;
-				}
+				c.insert(0, 1, k - 10);
+				k = 1;
 			}
-			for (int i = lendif - 1; i>=0; --i)
+			else
 			{
-				k += bf1.num[i];
-				if (k>'9')
-				{
-					c.insert(0, 1, k - 10);
-					k = 1;
-				}
-				else
-				{
-					c.insert(0, 1, k);
-					k = 0;
-				}
+				c.insert(0, 1, k);
+				k = 0;
 			}
-			if (k == 1)
+		}
+		for (int i = lendif - 1; i>=0; --i)
+		{
+			k += a.num[i];
+			if (k>'9')
 			{
-				c.insert(0, 1, '1');
+				c.insert(0, 1, k - 10);
+				k = 1;
 			}
+			else
+			{
+				c.insert(0, 1, k);
+				k = 0;
+			}
+		}
+		if (k == 1)
+		{
+			c.insert(0, 1, '1');
+		}
+		ans.num = c;
+		ans.power = a.power;
+		ans.tol = a.tol;
+		ans.sign = a.sign;
+	}
+	else
+	{
+		if (a.sign)
+		{
+			a.sign = false;
+			ans = b - a;
 		}
 		else
 		{
-			lendif = len2 - len1;
-			for (int i = len1 - 1; i>=0; --i)
+			b.sign = false;
+			ans = a - b;
+		}
+	}
+	return ans;
+}
+
+bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2)
+{
+	std::string c;
+	bigfloat a = bf1;
+	bigfloat b = bf2;
+	bigfloat ans;
+	if (!a.sign && !b.sign)
+	{
+		if (a < b)
+		{
+			ans = -(b - a);
+		}
+		else
+		{
+			if (a.power > b.power)
 			{
-				k += bf2.num[i + lendif] + bf1.num[i] - '0';
-				if (k>'9')
-				{
-					c.insert(0, 1, k - 10);
-					k = 1;
-				}
-				else
+				add_zeros(b, a.power - b.power);
+			}
+			else if (a.power < b.power)
+			{
+				add_zeros(a, b.power - a.power);
+			}
+			int len1 = a.num.length(), len2 = b.num.length();
+			int k = 0;
+			int lendif = len1 - len2;
+
+			for (int i = len2 - 1; i>=0; --i)
+			{
+				k += a.num[i + lendif] - b.num[i] + '0';
+				if (k >= '0')
 				{
 					c.insert(0, 1, k);
 					k = 0;
+				}
+				else
+				{
+					c.insert(0, 1, k + 10);
+					k = -1;
 				}
 			}
 			for (int i = lendif - 1; i>=0; --i)
 			{
-				k += bf2.num[i];
-				if (k>'9')
-				{
-					c.insert(0, 1, k - 10);
-					k = 1;
-				}
-				else
+				k += a.num[i];
+				if (k >= '0')
 				{
 					c.insert(0, 1, k);
 					k = 0;
 				}
+				else
+				{
+					c.insert(0, 1, k + 10);
+					k = -1;
+				}
 			}
-			if (k == 1)
-			{
-				c.insert(0, 1, '1');
-			}
+			if (c[0] == '0'){c.erase(0, 1);}
+			ans.num = c;
+			ans.power = a.power;
+			ans.tol = a.tol;
+			ans.sign = a.sign;
 		}
-		ans.num = c;
-		ans.power = bf1.power;
-		ans.tol = bf1.tol;
-		ans.sign = bf1.sign;
+		
+	}
+	else if (a.sign && b.sign)
+	{
+		b = -b;
+		a = -a;
+		ans = b - a;
+	}
+	else if (a.sign && !b.sign)
+	{
+		b = -b;
+		ans = a + b;
+	}
+	else //if (!a.sign && b.sign)
+	{
+		b = -b;
+		ans = a + b;
 	}
 	return ans;
+}
+bool operator >(const bigfloat& bf1, const bigfloat& bf2)
+{
+	if (!bf1.sign && bf2.sign)
+	{
+		return true;
+	}
+	else if (bf1.sign && !bf2.sign)
+	{
+		return false;
+	}
+	else if (!bf1.sign)
+	{
+		if (bf1.num.length() - bf1.power > bf2.num.length() - bf2.power)
+		{
+			return true;
+		}
+		if (bf1.num.length() - bf1.power < bf2.num.length() - bf2.power)
+		{
+			return false;
+		}
+		int minlen;
+		if (bf1.num.length() > bf2.num.length()){minlen = bf2.num.length();}
+		else {minlen = bf1.num.length();}
+		for (int i = 0; i < minlen; i++)
+		{
+			if (bf1.num[i] > bf2.num[i]){return true;}
+			if (bf1.num[i] < bf2.num[i]){return false;}
+		}
+		if (bf1.num.length() > bf2.num.length()){return true;}
+		else {return false;}
+	}
+	else //if (bf1.sign)
+	{
+		if (bf1.num.length() - bf1.power < bf2.num.length() - bf2.power)
+		{
+			return true;
+		}
+		if (bf1.num.length() - bf1.power > bf2.num.length() - bf2.power)
+		{
+			return false;
+		}
+		int minlen;
+		if (bf1.num.length() < bf2.num.length()){minlen = bf2.num.length();}
+		else {minlen = bf1.num.length();}
+		for (int i = 0; i < minlen; i++)
+		{
+			if (bf1.num[i] < bf2.num[i]){return true;}
+			if (bf1.num[i] > bf2.num[i]){return false;}
+		}
+		if (bf1.num.length() < bf2.num.length()){return true;}
+		else {return false;}
+	}
+}
+
+bool operator ==(const bigfloat& bf1, const bigfloat& bf2)
+{
+	if (!bf1.num.compare(bf2.num) && bf1.sign == bf2.sign && bf1.power == bf2.power)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool operator !=(const bigfloat& bf1, const bigfloat& bf2)
+{
+	return !(bf1 == bf2);
+}
+
+bool operator >=(const bigfloat& bf1, const bigfloat& bf2)
+{
+	return (bf1 == bf2 || bf1 > bf2);
+}
+
+bool operator <(const bigfloat& bf1, const bigfloat& bf2)
+{
+	return !(bf1 >= bf2);
+}
+
+bool operator <=(const bigfloat& bf1, const bigfloat& bf2)
+{
+	return !(bf1 > bf2);
+}
+
+bigfloat operator +(const bigfloat& bf)
+{
+	return bf;
+}
+
+bigfloat operator -(const bigfloat& bf)
+{
+	bigfloat a = bf;
+	a.sign = !a.sign;
+	return a;
 }
 
 int main(){
 	bigfloat a, e;
 	std::cin >> a >> e; 
-	bigfloat c(a+e);
-	std::cout << c << std::endl;
+	
+	std::cout << (a - e) << std::endl;
 	// std::cout << e.num << ' ' << e.power << ' ' << e.sign << ' ' << e.tol << std::endl;
 	// std::cout << e <<  std::endl;
 	return 0;
