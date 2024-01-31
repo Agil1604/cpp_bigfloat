@@ -28,8 +28,8 @@ class bigfloat
 		
 		friend std::ostream& operator <<(std::ostream& out, const bigfloat& bf);
 		friend std::istream& operator >>(std::istream &in, bigfloat& bf);
-		//~ friend bigfloat operator +(const bigfloat& bf);
-		//~ friend bigfloat operator -(const bigfloat& bf);
+		//friend bigfloat operator +(const bigfloat& bf);
+		//friend bigfloat operator -(const bigfloat& bf);
 		friend bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2);
 		friend bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2);
 		friend bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2);
@@ -53,6 +53,7 @@ class bigfloat
 		friend bool operator <=(const bigfloat& bf1, const bigfloat& bf2);
 		friend bool operator ==(const bigfloat& bf1, const bigfloat& bf2);
 		friend bool operator !=(const bigfloat& bf1, const bigfloat& bf2);
-		friend bigfloat new_tol(const bigfloat& bf, int n);
+		
+		friend void add_zeros(bigfloat& bf, int n);
 };
 

@@ -85,16 +85,123 @@ std::ostream& operator<<(std::ostream& out, bigfloat& bf){
 	return out;
 }
 
-bigfloat bigfloat::new_tol(const bigfloat& bf, int n)
+void add_zeros(bigfloat& bf, int n)
 {
-	
+	for (int i = 0; i < n; i++)
+	{
+		bf.num.append("0");
+		bf.power++;
+	}
+	if (bf.power>bf.tol)
+	{
+		bf.tol = bf.power;
+	}
+}
+
+bigfloat operator +(bigfloat& bf1, bigfloat& bf2)
+{
+	std::string c;
+	bigfloat ans;
+	if (bf1.sign == bf2.sign)
+	{
+		if (bf1.power > bf2.power)
+		{
+			add_zeros(bf2, bf1.power - bf2.power);
+		}
+		else if (bf1.power < bf2.power)
+		{
+			add_zeros(bf1, bf2.power - bf1.power);
+		}
+		
+		int len1 = bf1.num.length(), len2 = bf2.num.length();
+		int k = 0;
+		int lendif;
+		if (len1 > len2)
+		{
+			lendif = len1 - len2;
+			for (int i = len2 - 1; i>=0; --i)
+			{
+				k += bf1.num[i + lendif] + bf2.num[i] - '0';
+				if (k>'9')
+				{
+					c.insert(0, 1, k - 10);
+					k = 1;
+				}
+				else
+				{
+					c.insert(0, 1, k);
+					k = 0;
+				}
+			}
+			for (int i = lendif - 1; i>=0; --i)
+			{
+				k += bf1.num[i];
+				if (k>'9')
+				{
+					c.insert(0, 1, k - 10);
+					k = 1;
+				}
+				else
+				{
+					c.insert(0, 1, k);
+					k = 0;
+				}
+			}
+			if (k == 1)
+			{
+				c.insert(0, 1, '1');
+			}
+		}
+		else
+		{
+			lendif = len2 - len1;
+			for (int i = len1 - 1; i>=0; --i)
+			{
+				k += bf2.num[i + lendif] + bf1.num[i] - '0';
+				if (k>'9')
+				{
+					c.insert(0, 1, k - 10);
+					k = 1;
+				}
+				else
+				{
+					c.insert(0, 1, k);
+					k = 0;
+				}
+			}
+			for (int i = lendif - 1; i>=0; --i)
+			{
+				k += bf2.num[i];
+				if (k>'9')
+				{
+					c.insert(0, 1, k - 10);
+					k = 1;
+				}
+				else
+				{
+					c.insert(0, 1, k);
+					k = 0;
+				}
+			}
+			if (k == 1)
+			{
+				c.insert(0, 1, '1');
+			}
+		}
+		ans.num = c;
+		ans.power = bf1.power;
+		ans.tol = bf1.tol;
+		ans.sign = bf1.sign;
+	}
+	return ans;
 }
 
 int main(){
-	bigfloat a;
-	std::cin >> a; 
-	bigfloat e = a;
-	std::cout << e.num << ' ' << e.power << ' ' << e.sign << ' ' << e.tol << std::endl;
-	std::cout << e <<  std::endl;
+	bigfloat a, e;
+	std::cin >> a >> e; 
+	bigfloat c(a+e);
+	std::cout << c << std::endl;
+	// std::cout << e.num << ' ' << e.power << ' ' << e.sign << ' ' << e.tol << std::endl;
+	// std::cout << e <<  std::endl;
 	return 0;
 }
