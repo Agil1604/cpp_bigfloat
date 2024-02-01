@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <string>
 
@@ -24,14 +25,14 @@ class bigfloat
 		
 		// Перегрузка операторов
 		const bigfloat& operator=(const bigfloat& bf);//готово
-		
+		// friend bigfloat operator "" _mbf(std::string number);
 		friend std::ostream& operator <<(std::ostream& out, const bigfloat& bf);//готово
 		friend std::istream& operator >>(std::istream &in, bigfloat& bf);//готово
 		friend bigfloat operator +(const bigfloat& bf);//готово
 		friend bigfloat operator -(const bigfloat& bf);//готово
 		friend bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2);//готово
 		friend bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2);//готово
-		friend bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2);
+		friend bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2);//готово
 		friend bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2);
 		//friend bigfloat operator %(const bigfloat& bf1, const int& bf2);
 		friend bigfloat operator ++(bigfloat& bf);
