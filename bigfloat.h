@@ -24,6 +24,7 @@ class bigfloat
 		// bool ch_tol();  // change tolerance
 		bool is_null(bigfloat bf);
 		void erase_last_nulls(bigfloat& bf);
+		friend std::string get_str(bigfloat& bf);
 		// Перегрузка операторов
 		const bigfloat& operator=(const bigfloat& bf);//готово
 		// friend bigfloat operator "" _mbf(std::string number);

@@ -412,16 +412,28 @@ bigfloat operator -(const bigfloat& bf)
 
 bigfloat operator ++(bigfloat& bf)
 {
-	bigfloat a = 1_mbf;
-	bf = bf + a;
+	bf = bf + 1_mbf;
 	return bf;
+}
+
+bigfloat operator ++(bigfloat& bf, int)
+{
+	bigfloat a = bf;
+	bf = bf + 1_mbf;
+	return a;
 }
 
 bigfloat operator --(bigfloat& bf)
 {
-	bigfloat a = 1_mbf;
-	bf = bf - a;
+	bf = bf - 1_mbf;
 	return bf;
+}
+
+bigfloat operator --(bigfloat& bf, int)
+{
+	bigfloat a = bf;
+	bf = bf - 1_mbf;
+	return a;
 }
 
 bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2)
@@ -459,24 +471,26 @@ bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2)
 
 bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 {
-	bigfloat ans;
-	std::string c;
 	if (is_null(bf2))
 	{
 		std::cout << "wrong input" << std::endl;
 		exit(1);
 	}
 	bigfloat op1 = bf1, op2 = bf2;
+	bigfloat ans;
+	bigfloat a;
+	bigfloat k;
+		
+	std::string c = {};
 	op1.power = 0;
 	op2.power = 0;
-	bigfloat a;
+
 	int pow = bf1.power - bf2.power;
 	add_zeros(op1, op1.tol - pow);
 	pow = op1.power + pow;
 	int len = op1.num.length();
 	a.num = "";
-	bigfloat k;
-	
+
 	for (int i = 0; i < len; i++)
 	{
 		k.num = "0";
@@ -494,9 +508,36 @@ bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 	ans.sign = (bf1.sign == bf2.sign ? false : true);
 	ans.tol = bf1.tol;
 	
-	std::cout << ans.num << " " << ans.power << " " << ans.tol << " " << ans.sign << std::endl;
 	erase_last_nulls(ans);
 	return ans;
+}
+
+std::string get_str(bigfloat& bf)
+{
+	std:: string str;
+	if (bf.sign)
+	{
+		str.append("-");
+	}
+	if (bf.power == 0)
+	{
+		str.append(bf.num);
+	}
+	else
+	{
+		int i, len = bf.num.length() - bf.power;
+		for (i = 0; i < len; ++i)
+		{
+			str.push_back(bf.num[i]);
+		}
+		str.append(".");
+		len += bf.power;
+		for (; i < len; ++i)
+		{
+			str.push_back(bf.num[i]);
+		}
+	}
+	return str;
 }
 
 int main(){
@@ -505,7 +546,9 @@ int main(){
 	// e = 1.13241_mbf;
 	std::cin >> a >> e; 
 	bigfloat c = a / e;
-	std::cout << c << " " << c.power << std::endl;
+	// std::cout << c << std::endl;
+	std::string f = get_str(c);
+	std::cout << f << std::endl;
 	// std::cout << e.num << ' ' << e.power << ' ' << e.sign << ' ' << e.tol << std::endl;
 	// std::cout << e <<  std::endl;
 	return 0;
