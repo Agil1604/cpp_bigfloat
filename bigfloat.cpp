@@ -105,6 +105,20 @@ void add_zeros(bigfloat& bf, int n)
 	}
 }
 
+bool is_null(bigfloat bf)
+{
+	int len = bf.num.length();
+	for (int i = 0; i < len; ++i)
+	{
+		if (bf.num[i] != '0')
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
 bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2)
 {
 	std::string c = {};
@@ -239,7 +253,7 @@ bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2)
 					k = -1;
 				}
 			}
-			if (c[0] == '0'){c.erase(0, 1);}
+			while (c[0] == '0' && c.length() - a.power > 1){c.erase(0, 1);}
 			ans.num = c;
 			ans.power = a.power;
 			ans.tol = a.tol;
@@ -267,6 +281,7 @@ bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2)
 }
 bool operator >(const bigfloat& bf1, const bigfloat& bf2)
 {
+	if (is_null(bf1) && is_null(bf2)){return false;}
 	if (!bf1.sign && bf2.sign)
 	{
 		return true;
@@ -331,6 +346,7 @@ bool operator >(const bigfloat& bf1, const bigfloat& bf2)
 
 bool operator ==(const bigfloat& bf1, const bigfloat& bf2)
 {
+	if (is_null(bf1) && is_null(bf2)){return true;}
 	bigfloat a = bf1, b = bf2;
 	if (a.power > b.power)
 	{
@@ -348,6 +364,17 @@ bool operator ==(const bigfloat& bf1, const bigfloat& bf2)
 	else
 	{
 		return false;
+	}
+}
+
+void erase_last_nulls(bigfloat& bf)
+{
+	int len = bf.num.length();
+	while (bf.num[len-1] == '0' && len>1 && bf.power > 0)
+	{
+		bf.num.pop_back();
+		bf.power--;
+		len--;
 	}
 }
 
@@ -383,6 +410,20 @@ bigfloat operator -(const bigfloat& bf)
 	return a;
 }
 
+bigfloat operator ++(bigfloat& bf)
+{
+	bigfloat a = 1_mbf;
+	bf = bf + a;
+	return bf;
+}
+
+bigfloat operator --(bigfloat& bf)
+{
+	bigfloat a = 1_mbf;
+	bf = bf - a;
+	return bf;
+}
+
 bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2)
 {
 	std::string c = {};
@@ -416,13 +457,55 @@ bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2)
 	return ans;
 }
 
+bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
+{
+	bigfloat ans;
+	std::string c;
+	if (is_null(bf2))
+	{
+		std::cout << "wrong input" << std::endl;
+		exit(1);
+	}
+	bigfloat op1 = bf1, op2 = bf2;
+	op1.power = 0;
+	op2.power = 0;
+	bigfloat a;
+	int pow = bf1.power - bf2.power;
+	add_zeros(op1, op1.tol - pow);
+	pow = op1.power + pow;
+	int len = op1.num.length();
+	a.num = "";
+	bigfloat k;
+	
+	for (int i = 0; i < len; i++)
+	{
+		k.num = "0";
+		if (is_null(a))
+		{a.num = op1.num.substr(i, 1);}
+		else{a.num.append(op1.num.substr(i, 1));}
+
+		while ((k + 1_mbf)*op2 <= a){++k;}
+		a = a - k*op2;
+		c.append(k.num);
+	}
+	ans.power = pow;
+	while (c[0] == '0' && c.length() - ans.power > 1){c.erase(0, 1);}
+	ans.num = c;
+	ans.sign = (bf1.sign == bf2.sign ? false : true);
+	ans.tol = bf1.tol;
+	
+	std::cout << ans.num << " " << ans.power << " " << ans.tol << " " << ans.sign << std::endl;
+	erase_last_nulls(ans);
+	return ans;
+}
+
 int main(){
 	bigfloat a, e;
 	// a = 15.132412341234_mbf;
 	// e = 1.13241_mbf;
 	std::cin >> a >> e; 
-	
-	std::cout << (a >= e) << std::endl;
+	bigfloat c = a / e;
+	std::cout << c << " " << c.power << std::endl;
 	// std::cout << e.num << ' ' << e.power << ' ' << e.sign << ' ' << e.tol << std::endl;
 	// std::cout << e <<  std::endl;
 	return 0;

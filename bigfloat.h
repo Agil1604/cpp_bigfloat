@@ -22,7 +22,8 @@ class bigfloat
 		
 		bigfloat count_pi(int tolerance);
 		// bool ch_tol();  // change tolerance
-		
+		bool is_null(bigfloat bf);
+		void erase_last_nulls(bigfloat& bf);
 		// Перегрузка операторов
 		const bigfloat& operator=(const bigfloat& bf);//готово
 		// friend bigfloat operator "" _mbf(std::string number);
@@ -35,8 +36,8 @@ class bigfloat
 		friend bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2);//готово
 		friend bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2);
 		//friend bigfloat operator %(const bigfloat& bf1, const int& bf2);
-		friend bigfloat operator ++(bigfloat& bf);
-		friend bigfloat operator --(bigfloat& bf);
+		friend bigfloat operator ++(bigfloat& bf);//готово
+		friend bigfloat operator --(bigfloat& bf);//готово
 		friend bigfloat operator ++(bigfloat& bf, int);
 		friend bigfloat operator --(bigfloat& bf, int);
 		friend bigfloat operator +=(bigfloat& bf1, const bigfloat& bf2);
