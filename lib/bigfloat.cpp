@@ -1,10 +1,10 @@
 #include <iostream>
 #include "bigfloat.h"
 
-
 // литерал
-bigfloat operator"" _mbf(const char* str)
+bigfloat operator""_mbf(const char* str)
 {
+	// any number -> bigfloat
 	return bigfloat(std::string(str));
 }
 
@@ -23,6 +23,10 @@ bigfloat::bigfloat(std::string number, int tolerance){
 		sign = true;
 		number.erase(0, 1); // удаление знака
 	}
+	else if (number[0] == '+') {
+		sign = false;
+		number.erase(0, 1); // удаление знака
+	}
 	else {sign = false;}
 	while (number[0] == '0' &&  number[1] != '.' && number.length() > 1){number.erase(0, 1);}
 	if (std::string::npos == number.find("."))
@@ -39,25 +43,21 @@ bigfloat::bigfloat(std::string number, int tolerance){
 	}	
 }
 
-//конструктор копирования
-bigfloat::bigfloat(const bigfloat& bf){
-	num = bf.num;
-	power = bf.power;
-	tol = bf.tol;
-	sign = bf.sign;
-}
+// операторы
 
-//оператор присваивания
-const bigfloat& bigfloat::operator=(const bigfloat& bf){
-	if( &bf == this ) return *this;
-	num = bf.num;
-	power = bf.power;
-	tol = bf.tol;
-	sign = bf.sign;
+const bigfloat& bigfloat::operator=(int x){
+	if (x < 0)
+	{
+		sign = 1;
+		x *= -1;
+	}
+	else {sign = 0;}
+	num = std::to_string(x);
+	power = 0;
 	return *this;
 }
 
-//оператор ввода
+// оператор ввода
 std::istream& operator>>(std::istream& in, bigfloat& bf){
 	std::string tmp;
 	in >> tmp;
@@ -65,7 +65,7 @@ std::istream& operator>>(std::istream& in, bigfloat& bf){
 	return in;
 }
 
-//оператор вывода
+// оператор вывода
 std::ostream& operator<<(std::ostream& out, const bigfloat& bf){
 	if (bf.sign)
 	{
@@ -92,33 +92,7 @@ std::ostream& operator<<(std::ostream& out, const bigfloat& bf){
 	return out;
 }
 
-void add_zeros(bigfloat& bf, int n)
-{
-	for (int i = 0; i < n; i++)
-	{
-		bf.num.append("0");
-		bf.power++;
-	}
-	if (bf.power>bf.tol)
-	{
-		bf.tol = bf.power;
-	}
-}
-
-bool is_null(bigfloat bf)
-{
-	int len = bf.num.length();
-	for (int i = 0; i < len; ++i)
-	{
-		if (bf.num[i] != '0')
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-
+// сложение чисел
 bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2)
 {
 	std::string c = {};
@@ -129,11 +103,11 @@ bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2)
 	{
 		if (a.power > b.power)
 		{
-			add_zeros(b, a.power - b.power);
+			b.add_zeros(a.power - b.power);
 		}
 		else if (a.power < b.power)
 		{
-			add_zeros(a, b.power - a.power);
+			a.add_zeros(b.power - a.power);
 		}
 		
 		int len1 = a.num.length(), len2 = b.num.length();
@@ -144,7 +118,13 @@ bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2)
 			ans = a;
 			a = b;
 			b = ans;
+			
+			k = len1;
+			len1 = len2;
+			len2 = k;
 		}
+		k = 0;
+
 		lendif = len1 - len2;
 		for (int i = len2 - 1; i>=0; --i)
 		{
@@ -199,6 +179,7 @@ bigfloat operator +(const bigfloat& bf1, const bigfloat& bf2)
 	return ans;
 }
 
+// вычитаниеи чисел
 bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2)
 {
 	std::string c = {};
@@ -215,11 +196,11 @@ bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2)
 		{
 			if (a.power > b.power)
 			{
-				add_zeros(b, a.power - b.power);
+				b.add_zeros(a.power - b.power);
 			}
 			else if (a.power < b.power)
 			{
-				add_zeros(a, b.power - a.power);
+				a.add_zeros(b.power - a.power);
 			}
 			int len1 = a.num.length(), len2 = b.num.length();
 			int k = 0;
@@ -279,9 +260,11 @@ bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2)
 	}
 	return ans;
 }
+
+// оператор больше
 bool operator >(const bigfloat& bf1, const bigfloat& bf2)
 {
-	if (is_null(bf1) && is_null(bf2)){return false;}
+	if (bf1.is_null() && bf2.is_null()){return false;}
 	if (!bf1.sign && bf2.sign)
 	{
 		return true;
@@ -293,11 +276,11 @@ bool operator >(const bigfloat& bf1, const bigfloat& bf2)
 	bigfloat a = bf1, b = bf2;
 	if (a.power > b.power)
 	{
-		add_zeros(b, a.power - b.power);
+		b.add_zeros(a.power - b.power);
 	}
 	else if (a.power < b.power)
 	{
-		add_zeros(a, b.power - a.power);
+		a.add_zeros(b.power - a.power);
 	}
 	
 	if (!a.sign)
@@ -344,17 +327,18 @@ bool operator >(const bigfloat& bf1, const bigfloat& bf2)
 	}
 }
 
+// проверка равенства двух чисел
 bool operator ==(const bigfloat& bf1, const bigfloat& bf2)
 {
-	if (is_null(bf1) && is_null(bf2)){return true;}
+	if (bf1.is_null() && bf2.is_null()){return true;}
 	bigfloat a = bf1, b = bf2;
 	if (a.power > b.power)
 	{
-		add_zeros(b, a.power - b.power);
+		b.add_zeros(a.power - b.power);
 	}
 	else if (a.power < b.power)
 	{
-		add_zeros(a, b.power - a.power);
+		a.add_zeros(b.power - a.power);
 	}
 	
 	if (!a.num.compare(b.num) && a.sign == b.sign && a.power == b.power)
@@ -367,42 +351,37 @@ bool operator ==(const bigfloat& bf1, const bigfloat& bf2)
 	}
 }
 
-void erase_last_nulls(bigfloat& bf)
-{
-	int len = bf.num.length();
-	while (bf.num[len-1] == '0' && len>1 && bf.power > 0)
-	{
-		bf.num.pop_back();
-		bf.power--;
-		len--;
-	}
-}
-
+// проверка неравенства двух чисел
 bool operator !=(const bigfloat& bf1, const bigfloat& bf2)
 {
 	return !(bf1 == bf2);
 }
 
+// оператор больше или равно
 bool operator >=(const bigfloat& bf1, const bigfloat& bf2)
 {
 	return (bf1 == bf2 || bf1 > bf2);
 }
 
+// оператор меньше
 bool operator <(const bigfloat& bf1, const bigfloat& bf2)
 {
 	return !(bf1 >= bf2);
 }
 
+// оператор меньше или равно
 bool operator <=(const bigfloat& bf1, const bigfloat& bf2)
 {
 	return !(bf1 > bf2);
 }
 
+// унарный плюс
 bigfloat operator +(const bigfloat& bf)
 {
 	return bf;
 }
 
+// унарный минус
 bigfloat operator -(const bigfloat& bf)
 {
 	bigfloat a = bf;
@@ -410,12 +389,14 @@ bigfloat operator -(const bigfloat& bf)
 	return a;
 }
 
+// префиксный инкремент
 bigfloat operator ++(bigfloat& bf)
 {
 	bf = bf + 1_mbf;
 	return bf;
 }
 
+// постфиксный инкремент
 bigfloat operator ++(bigfloat& bf, int)
 {
 	bigfloat a = bf;
@@ -423,12 +404,14 @@ bigfloat operator ++(bigfloat& bf, int)
 	return a;
 }
 
+// префиксный декремент
 bigfloat operator --(bigfloat& bf)
 {
 	bf = bf - 1_mbf;
 	return bf;
 }
 
+// постфиксный декремент
 bigfloat operator --(bigfloat& bf, int)
 {
 	bigfloat a = bf;
@@ -436,6 +419,7 @@ bigfloat operator --(bigfloat& bf, int)
 	return a;
 }
 
+// оператор умножение
 bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2)
 {
 	std::string c = {};
@@ -469,9 +453,10 @@ bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2)
 	return ans;
 }
 
+// оператор деление
 bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 {
-	if (is_null(bf2))
+	if (bf2.is_null())
 	{
 		std::cout << "wrong input" << std::endl;
 		exit(1);
@@ -484,9 +469,11 @@ bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 	std::string c = {};
 	op1.power = 0;
 	op2.power = 0;
-
+	op1.sign = 0;
+	op2.sign = 0;
+	
 	int pow = bf1.power - bf2.power;
-	add_zeros(op1, op1.tol - pow);
+	op1.add_zeros(op1.tol - pow);
 	pow = op1.power + pow;
 	int len = op1.num.length();
 	a.num = "";
@@ -494,7 +481,7 @@ bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 	for (int i = 0; i < len; i++)
 	{
 		k.num = "0";
-		if (is_null(a))
+		if (a.is_null())
 		{a.num = op1.num.substr(i, 1);}
 		else{a.num.append(op1.num.substr(i, 1));}
 
@@ -508,48 +495,7 @@ bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 	ans.sign = (bf1.sign == bf2.sign ? false : true);
 	ans.tol = bf1.tol;
 	
-	erase_last_nulls(ans);
+	ans.erase_last_nulls();
 	return ans;
 }
 
-std::string get_str(bigfloat& bf)
-{
-	std:: string str;
-	if (bf.sign)
-	{
-		str.append("-");
-	}
-	if (bf.power == 0)
-	{
-		str.append(bf.num);
-	}
-	else
-	{
-		int i, len = bf.num.length() - bf.power;
-		for (i = 0; i < len; ++i)
-		{
-			str.push_back(bf.num[i]);
-		}
-		str.append(".");
-		len += bf.power;
-		for (; i < len; ++i)
-		{
-			str.push_back(bf.num[i]);
-		}
-	}
-	return str;
-}
-
-int main(){
-	bigfloat a, e;
-	// a = 15.132412341234_mbf;
-	// e = 1.13241_mbf;
-	std::cin >> a >> e; 
-	bigfloat c = a / e;
-	// std::cout << c << std::endl;
-	std::string f = get_str(c);
-	std::cout << f << std::endl;
-	// std::cout << e.num << ' ' << e.power << ' ' << e.sign << ' ' << e.tol << std::endl;
-	// std::cout << e <<  std::endl;
-	return 0;
-}
