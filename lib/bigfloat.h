@@ -6,11 +6,13 @@ class bigfloat
 	private:
 		void add_zeros(int n);
 		void erase_last_nulls();
-	public:
+	
 		std::string num; // само число без учета знака и точки
 		unsigned power;  // положение точки как 10^(-power)
-		int tol;  // максимальное количество знаков после запятой
 		bool sign;  // знак числа: True -- отрицательное, False -- положительное
+	public:
+
+		int tol;  // максимальное количество знаков после запятой
 		
 		// Конструкторы
 		explicit bigfloat(int tolerance = 6);
@@ -18,8 +20,7 @@ class bigfloat
 
 		
 		// Методы
-		bigfloat count_pi(int tolerance);
-		bool is_null() const;
+		bool is_zero() const;
 		std::string get_str() const;
 		void set_tolerance(int tolerance);
 		
@@ -47,17 +48,15 @@ class bigfloat
 		friend bool operator <=(const bigfloat& bf1, const bigfloat& bf2);
 		friend bool operator ==(const bigfloat& bf1, const bigfloat& bf2);
 		friend bool operator !=(const bigfloat& bf1, const bigfloat& bf2);
+				
+		friend bigfloat operator +=(bigfloat& bf1, const bigfloat& bf2);
+		friend bigfloat operator -=(bigfloat& bf1, const bigfloat& bf2);
+		friend bigfloat operator *=(bigfloat& bf1, const bigfloat& bf2);
+		friend bigfloat operator /=(bigfloat& bf1, const bigfloat& bf2);
 		
 		// в разработке
-		
-		// friend bigfloat operator +=(bigfloat& bf1, const bigfloat& bf2);
-		// friend bigfloat operator -=(bigfloat& bf1, const bigfloat& bf2);
-		// friend bigfloat operator *=(bigfloat& bf1, const bigfloat& bf2);
-		// friend bigfloat operator /=(bigfloat& bf1, const bigfloat& bf2);
+
 		// friend bigfloat operator %=(bigfloat& bf1, const int& bf2);
-		// friend bool operator !(const bigfloat& bf);
-		// friend bool operator &&(const bigfloat& bf1, const bigfloat& bf2);
-		// friend bool operator ||(const bigfloat& bf1, const bigfloat& bf2);
 		// friend bigfloat operator %(const bigfloat& bf1, const int& bf2);
 		// operator<=>				
 };

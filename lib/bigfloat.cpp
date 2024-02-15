@@ -2,10 +2,19 @@
 #include "bigfloat.h"
 
 // литерал
-bigfloat operator""_mbf(const char* str)
+bigfloat operator""_mbf(const char* tmp)
 {
 	// any number -> bigfloat
-	return bigfloat(std::string(str));
+	std::string str = std::string(tmp);
+
+	if (std::string::npos == str.find("."))
+	{
+		return bigfloat(str);
+	}
+	else
+	{
+		return bigfloat(str, str.length() - str.find(".") + 2);
+	}
 }
 
 // конструкторы
@@ -264,7 +273,7 @@ bigfloat operator -(const bigfloat& bf1, const bigfloat& bf2)
 // оператор больше
 bool operator >(const bigfloat& bf1, const bigfloat& bf2)
 {
-	if (bf1.is_null() && bf2.is_null()){return false;}
+	if (bf1.is_zero() && bf2.is_zero()){return false;}
 	if (!bf1.sign && bf2.sign)
 	{
 		return true;
@@ -330,7 +339,7 @@ bool operator >(const bigfloat& bf1, const bigfloat& bf2)
 // проверка равенства двух чисел
 bool operator ==(const bigfloat& bf1, const bigfloat& bf2)
 {
-	if (bf1.is_null() && bf2.is_null()){return true;}
+	if (bf1.is_zero() && bf2.is_zero()){return true;}
 	bigfloat a = bf1, b = bf2;
 	if (a.power > b.power)
 	{
@@ -456,7 +465,7 @@ bigfloat operator *(const bigfloat& bf1, const bigfloat& bf2)
 // оператор деление
 bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 {
-	if (bf2.is_null())
+	if (bf2.is_zero())
 	{
 		std::cout << "wrong input" << std::endl;
 		exit(1);
@@ -481,7 +490,7 @@ bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 	for (int i = 0; i < len; i++)
 	{
 		k.num = "0";
-		if (a.is_null())
+		if (a.is_zero())
 		{a.num = op1.num.substr(i, 1);}
 		else{a.num.append(op1.num.substr(i, 1));}
 
@@ -499,3 +508,27 @@ bigfloat operator /(const bigfloat& bf1, const bigfloat& bf2)
 	return ans;
 }
 
+
+bigfloat operator +=(bigfloat& bf1, const bigfloat& bf2)
+{
+	bf1 = bf1 + bf2;
+	return bf1;
+}
+
+bigfloat operator -=(bigfloat& bf1, const bigfloat& bf2)
+{
+	bf1 = bf1 - bf2;
+	return bf1;
+}
+
+bigfloat operator *=(bigfloat& bf1, const bigfloat& bf2)
+{
+	bf1 = bf1 * bf2;
+	return bf1;
+}
+
+bigfloat operator /=(bigfloat& bf1, const bigfloat& bf2)
+{
+	bf1 = bf1 / bf2;
+	return bf1;
+}

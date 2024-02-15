@@ -43,7 +43,7 @@ std::string bigfloat::get_str() const
 }
 
 // проверяет на равенство нулю
-bool bigfloat::is_null() const
+bool bigfloat::is_zero() const
 {
 	int len = num.length();
 	for (int i = 0; i < len; ++i)
@@ -90,10 +90,4 @@ void bigfloat::set_tolerance(int tolerance)
 		tol = tolerance;
 	}
 }
-		
-// вычисляет число пи с заданной точностью
-// bigfloat count_pi(int tolerance)
-// {
-	
-// }
 
