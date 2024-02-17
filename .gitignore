@@ -7,3 +7,4 @@ _deps/
 *.a
 my_test
 main
+output/

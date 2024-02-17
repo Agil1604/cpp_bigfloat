@@ -1,6 +1,9 @@
 #include <iostream>
 #include "bigfloat.h"
 #include "gtest/gtest.h"
+#include "my_pi.h"
+
+#define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679_mbf
 
 TEST(test1, comparison)
 {
@@ -92,8 +95,14 @@ TEST(test5, operations_and_assigment)
     EXPECT_EQ(a, ans);
 }
 
+TEST(test6, checking_pi)
+{
+    bigfloat a;
+    a = count_pi(100);
+    EXPECT_EQ(PI, a);
+}
 
-TEST(test6, other)
+TEST(test7, other)
 {
     bigfloat a = 1.555555_mbf;
 	a.set_tolerance(3);

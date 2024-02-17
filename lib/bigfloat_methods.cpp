@@ -91,3 +91,16 @@ void bigfloat::set_tolerance(int tolerance)
 	}
 }
 
+
+bigfloat square_root(bigfloat n) {
+    bigfloat x = 1_mbf;
+	bigfloat last;
+    bigfloat two(n.tol);
+    two = 2_mbf;
+    while (x * x != n && last != x)
+	{
+		last = x;
+        x = (x + n / x) / two;
+	}
+	return x;
+}

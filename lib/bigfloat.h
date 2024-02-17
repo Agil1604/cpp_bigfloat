@@ -64,3 +64,4 @@ class bigfloat
 
 bigfloat operator ""_mbf(const char* str);
 
+bigfloat square_root(bigfloat n);
